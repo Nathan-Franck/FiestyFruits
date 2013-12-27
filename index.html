@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Fruit Frenzy</title>
+  <link rel="stylesheet" href="css/style.css" />
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://localhost:1337');
+    socket.on('news', function (data) {
+      console.log(data);
+      socket.emit('my other event', { my: 'data' });
+    });
+  </script>
+</head>
+
+<body>
+	<h1>Fiesty Fruits</h1>
+</body>
+</html>

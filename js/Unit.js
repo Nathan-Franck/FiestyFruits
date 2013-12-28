@@ -32,4 +32,8 @@ Unit.create = function(){ //create new unit
 	return unit;
 }
 
+Unit.enlist = function(unit){
+	Unit.list[unit.id] = unit;
+}
+
 global.Unit = Unit;

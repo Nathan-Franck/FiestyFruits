@@ -1,12 +1,5 @@
 var Game = {};
 
-Game.players = new Array();//list of players
-Game.units = new Array();//list of units
-
-Game.createNewPlayer = function(){ //go through player list and create new player using id
-
-}
-
 Game.update = function(){ //simulate game for one tick
 	Time.update();
 	var i;
@@ -16,3 +9,5 @@ Game.update = function(){ //simulate game for one tick
 		Unit.list[i].update();
 	}
 }
+
+global.Game = Game;

@@ -8,16 +8,23 @@ require('./js/Point.js')
 require('./js/Time.js')
 require('./js/Unit.js')
 
-console.log('The Game Has Begun!');
 setInterval(function() {
-  console.log('Next Frame!');
+
   }, 1000);
 
 app.listen(1337);
 
 
 function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
+  console.log(req.url);
+  var fileName;
+  if ( req.url == '/') {
+    fileName = '/index.html';
+  }
+  else {
+    fileName = req.url;
+  }
+  fs.readFile(__dirname + fileName,
   function (err, data) {
     if (err) {
       res.writeHead(500);
@@ -30,11 +37,6 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  Unit.create();
-  console.log("Unit X Pos: " + Unit.list[0].position.x);
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
+  socket.emit( 'update', Unit.create() );
 });
 

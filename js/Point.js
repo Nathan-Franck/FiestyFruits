@@ -37,3 +37,5 @@ function Point (x, y){
 		return "Point: {"+this.x +", "+ this.y+"}";
 	}
 }
+
+global.Point = Point;

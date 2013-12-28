@@ -29,4 +29,7 @@ Unit.create = function(){ //create new unit
 	}
 	//or tack onto end of list
 	Unit.list.push(unit);
+	return unit;
 }
+
+global.Unit = Unit;

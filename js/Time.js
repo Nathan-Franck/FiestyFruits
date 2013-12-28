@@ -11,5 +11,6 @@ Time.update = function() {
 	var nextTime = date.getTime()/1000-Time.startTime;
 	Time.deltaTime = Time.nextTime-Time.time;
 	Time.time = nextTime;
-	console.log(Time.time);
 }
+
+global.Time = Time;

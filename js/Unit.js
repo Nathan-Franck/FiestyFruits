@@ -30,3 +30,7 @@ Unit.create = function(){ //create new unit
 	//or tack onto end of list
 	Unit.list.push(unit);
 }
+
+Unit.enlist = function(unit){
+	Unit.list[unit.id] = unit;
+}

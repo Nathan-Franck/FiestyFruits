@@ -15,3 +15,5 @@ Graphics.init = function (){
 Graphics.update = function(){
 	Graphics.renderer.render(Graphics.stage);
 }
+
+global.Graphics = Graphics;

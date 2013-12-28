@@ -7,6 +7,7 @@ require('./js/Player.js')
 require('./js/Point.js')
 require('./js/Time.js')
 require('./js/Unit.js')
+require('./js/Graphics.js')
 
 setInterval(function() {
 

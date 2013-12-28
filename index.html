@@ -23,7 +23,7 @@
 <body>
 	<h1>Fiesty Fruits</h1>
   <script>
-    var socket = io.connect('http://localhost:1337');
+    var socket = io.connect(window.location.protocol + "//" + window.location.host);
     Graphics.init();
     requestAnimFrame(animate);
     function animate() {
@@ -32,19 +32,23 @@
       Graphics.update();
     }
     socket.on('new player', function(data) {
+      console.log("new player "+data.id);
       Gameobject.enlist(new Player(data));
     });
     socket.on('new unit', function(data) {
+      console.log("new unit "+data.id);
       Gameobject.enlist(new Unit(data));
     });
     socket.on('update', function(data) {
-      Gameobject.list[data.id].onEvent(data);     
+      var o = Gameobject.list[data.id]
+      console.log(data);
+      if (o != null) o.onEvent(data);     
     })
 
     $(window).mousedown(function(e) {
       var i;
       for (i = 0; i < Gameobject.list.length; ++i) {
-        if ( Gameobject.list[i] != null ) {
+        if ( Gameobject.list[i] != null && Gameobject.list[i].hasOwnProperty("goal") ) {
           Gameobject.list[i].goal.x = e.pageX;
           Gameobject.list[i].goal.y = e.pageY;
           socket.emit('update', Gameobject.list[i].asEvent());       

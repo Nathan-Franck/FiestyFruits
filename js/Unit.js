@@ -1,4 +1,5 @@
 function Unit (arg) {
+	this.id = arg.id;
 	this.position = new Point(arg.position.x, arg.position.y);
 	this.goal = new Point(arg.goal.x, arg.goal.y);
 	this.speed = arg.speed;
@@ -32,6 +33,7 @@ function Unit (arg) {
 		Graphics.stage.addChild(this.sprite);
 	}
 	this.asEvent = function() {
+		console.log(this.position);
 		return {id:this.id, position:this.position, goal:this.goal};
 	}
 	if (Graphics.isInitialized) this.initGraphics();

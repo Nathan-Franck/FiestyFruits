@@ -13,8 +13,8 @@ require('./js/Graphics.js')
 Game.isServer = true;
 
 setInterval(function() {
-
-  }, 1000);
+    Game.update();
+  }, 33);
 
 app.listen(1337);
 
@@ -42,9 +42,17 @@ function handler (req, res) {
 
 io.sockets.on('connection', function (socket) {
   socket.emit('new player', Gameobject.add(new Player()));
+
+  //relay current game state
+  for (var i in Gameobject.list){
+    var g = Gameobject.list[i];
+    if (g instanceof Unit) socket.emit('new unit', g.asEvent());
+    if (g instanceof Player) socket.emit('new player', g.asEvent());
+    //if (g instanceof Base) socket.emit('new base', g);
+  }
+
   io.sockets.emit( 'new unit', Gameobject.add(new Unit({position:new Point(20, 20), goal:new Point(30, 30), speed:20})) );
   socket.on('update', function(data) {
-    console.log(data);
     socket.broadcast.emit('update', Gameobject.list[data.id].onEvent(data).asEvent());
   });
 });

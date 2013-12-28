@@ -5,7 +5,7 @@ var app = require('http').createServer(handler)
 app.listen(1337);
 
 function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
+  fs.readFile(__dirname + req.url,
   function (err, data) {
     if (err) {
       res.writeHead(500);

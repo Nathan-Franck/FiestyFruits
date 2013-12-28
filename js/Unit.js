@@ -33,6 +33,9 @@ Unit.create = function(){ //create new unit
 }
 
 Unit.enlist = function(unit){
+	while (Unit.list.length <= unit.id) {
+		Unit.list.push(null);
+	}
 	Unit.list[unit.id] = unit;
 }
 

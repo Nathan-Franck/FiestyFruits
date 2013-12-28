@@ -9,7 +9,7 @@ Time.deltaTime = 0;
 Time.update = function() {
 	var date = new Date();
 	var nextTime = date.getTime()/1000-Time.startTime;
-	Time.deltaTime = Time.nextTime-Time.time;
+	Time.deltaTime = nextTime-Time.time;
 	Time.time = nextTime;
 }
 

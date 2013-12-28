@@ -20,6 +20,12 @@ function Point (x, y){
 		return this;
 	}
 
+	this.scale = function(v){
+		this.x *= v;
+		this.y *= v;
+		return this;
+	}
+
 	this.normalize = function(){
 		var length = this.magnitude();
 		if (length > 0){

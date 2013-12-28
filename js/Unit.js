@@ -3,15 +3,16 @@ function Unit (arg) {
 	this.id = arg.id;
 	this.position = new Point(arg.position.x, arg.position.y);
 	this.goal = new Point(arg.goal.x, arg.goal.y);
-	this.speed = 20;
+	this.speed = 40;
 	this.sprite = null;
 
 	this.update = function() {
 		this.position.add(
 			new Point().init(this.goal)
 			.sub(this.position).normalize()
-			//*Time.deltaTime*this.speed
-		);//
+			.scale(Time.deltaTime*this.speed)
+		);
+		//console.log(this.speed+" "+Time.deltaTime);
 		if (this.sprite != null){
 			this.sprite.position = this.position;
 		}

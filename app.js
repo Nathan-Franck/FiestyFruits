@@ -9,6 +9,8 @@ require('./js/Time.js')
 require('./js/Unit.js')
 require('./js/Graphics.js')
 
+Game.isServer = true;
+
 setInterval(function() {
 
   }, 1000);

@@ -15,19 +15,24 @@
   <script src="js/Player.js"></script>
   <script src="js/Time.js"></script>
   <script src="js/Point.js"></script>
-  
-
-  <script>
-    var socket = io.connect('http://localhost:1337');
-
-    socket.on('update', function(data) {
-    	Unit.enlist(data);
-    	console.log("The unit's x pos: " + Unit.list[0].position.x);
-    })
-  </script>
+  <script src="js/Graphics.js"></script>
 </head>
 
 <body>
 	<h1>Fiesty Fruits</h1>
+  <script>
+    var socket = io.connect('http://localhost:1337');
+    Graphics.init();
+    requestAnimFrame(animate);
+    function animate() {
+      requestAnimFrame(animate);
+      Game.update();
+      Graphics.update();
+    }
+    socket.on('update', function(data) {
+      Unit.enlist(new Unit(data));
+      console.log("The unit's x pos: " + Unit.list[data.id].position.x);
+    });
+  </script>
 </body>
 </html>

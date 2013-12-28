@@ -36,7 +36,8 @@
     });
 
     $(window).mousedown(function(e) {
-      console.log("click: " + e.pageX + ", " + e.pageY);
+      Unit.list[0].goal.x = e.x;
+      Unit.list[0].goal.y = e.y;
     });
   </script>
 </body>

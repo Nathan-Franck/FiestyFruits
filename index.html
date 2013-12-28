@@ -9,6 +9,7 @@
     var global = {};
   </script>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="js/jquery-1.10.2.min.js"></script>
   <script src="js/pixi.js"></script>
   <script src="js/Unit.js"></script>
   <script src="js/Game.js"></script>
@@ -32,6 +33,11 @@
     socket.on('update', function(data) {
       Unit.enlist(new Unit(data));
       console.log("The unit's x pos: " + Unit.list[data.id].position.x);
+    });
+
+    $(window).mousedown(function(e) {
+      Unit.list[0].goal.x = e.pageX;
+      Unit.list[0].goal.y = e.pageY;
     });
   </script>
 </body>

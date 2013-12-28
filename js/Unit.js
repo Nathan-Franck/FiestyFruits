@@ -1,10 +1,8 @@
 function Unit (arg) {
-	console.log(arg);
-	this.id = arg.id;
 	this.position = new Point(arg.position.x, arg.position.y);
 	this.goal = new Point(arg.goal.x, arg.goal.y);
-	this.speed = 40;
-	this.sprite = null;
+	this.speed = arg.speed;
+	var sprite = null;
 
 	this.update = function() {
 		this.position.add(
@@ -23,7 +21,7 @@ function Unit (arg) {
 	}
 	this.initGraphics = function() {
 		this.sprite = new PIXI.Sprite(Unit.texture);
-	
+
 		// center the sprites anchor point
 		this.sprite.anchor.x = 0.5;
 		this.sprite.anchor.y = 0.5;
@@ -35,32 +33,6 @@ function Unit (arg) {
 	if (Graphics.isInitialized) this.initGraphics();
 }
 
-Unit.list = new Array();
-
-Unit.create = function(){ //create new unit
-	var i;	
-	var unit = new Unit({id:i, position:new Point(20, 20), goal:new Point(200, 200)});
-	console.log(unit.position.getInfo());
-	//loop through existing list
-	for (i = 0; i < Unit.list.length; i++){
-		if (Unit.list[i] == null){
-			Unit.list[i] = unit;
-			unit.id = i;
-			return;
-		}
-	}
-	//or tack onto end of list
-	unit.id = Unit.list.length;
-	Unit.list.push(unit);
-	return unit;
-}
-
-Unit.enlist = function(unit){
-	while (Unit.list.length <= unit.id) {
-		Unit.list.push(null);
-	}
-	Unit.list[unit.id] = unit;
-	return unit;
-}
+Unit.prototype = new Gameobject(); 
 
 global.Unit = Unit;

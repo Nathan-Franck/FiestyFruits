@@ -3,6 +3,7 @@ var app = require('http').createServer(handler)
   , fs = require('fs');
 
 require('./js/Game.js')
+require('./js/Gameobject.js')
 require('./js/Player.js')
 require('./js/Point.js')
 require('./js/Time.js')
@@ -40,6 +41,7 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  socket.emit( 'update', Unit.create() );
+  socket.emit('new player', Gameobject.add(new Player()));
+  socket.emit('update', Gameobject.add(new Unit({position:new Point(20, 20), goal:new Point(30, 30), speed:20})));
 });
 

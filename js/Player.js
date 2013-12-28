@@ -1,6 +1,6 @@
 function Player (arg){
 	this.asEvent = function(){
-		return {id:id};
+		return {id:this.id};
 	}
 }
 

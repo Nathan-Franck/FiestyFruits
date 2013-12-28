@@ -44,6 +44,7 @@ io.sockets.on('connection', function (socket) {
   socket.emit('new player', Gameobject.add(new Player()));
   io.sockets.emit( 'new unit', Gameobject.add(new Unit({position:new Point(20, 20), goal:new Point(30, 30), speed:20})) );
   socket.on('update', function(data) {
+    console.log(data);
     socket.broadcast.emit('update', Gameobject.list[data.id].onEvent(data).asEvent());
   });
 });

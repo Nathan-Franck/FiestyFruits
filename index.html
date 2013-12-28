@@ -31,14 +31,25 @@
       Game.update();
       Graphics.update();
     }
-    socket.on('update', function(data) {
-      Gameobject.enlist(new Unit(data));
-      console.log("The unit's x pos: " + Gameobject.list[data.id].position.x);
+    socket.on('new player', function(data) {
+      Gameobject.enlist(new Player(data));
     });
+    socket.on('new unit', function(data) {
+      Gameobject.enlist(new Unit(data));
+    });
+    socket.on('update', function(data) {
+      Gameobject.list[data.id].onEvent(data);     
+    })
 
     $(window).mousedown(function(e) {
-      Gameobject.list[0].goal.x = e.pageX;
-      Gameobject.list[0].goal.y = e.pageY;
+      var i;
+      for (i = 0; i < Gameobject.list.length; ++i) {
+        if ( Gameobject.list[i] != null ) {
+          Gameobject.list[i].goal.x = e.pageX;
+          Gameobject.list[i].goal.y = e.pageY;
+          socket.emit('update', Gameobject.list[i].asEvent());       
+        }
+      }
     });
   </script>
 </body>

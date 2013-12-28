@@ -18,6 +18,7 @@ function Unit (arg) {
 	this.onEvent = function(e) {
 		if (!Game.isServer) this.position = e.position;
 		this.goal = e.goal;
+		return this;
 	}
 	this.initGraphics = function() {
 		this.sprite = new PIXI.Sprite(Unit.texture);
@@ -29,6 +30,9 @@ function Unit (arg) {
 		this.sprite.position = this.position;
 
 		Graphics.stage.addChild(this.sprite);
+	}
+	this.asEvent = function() {
+		return {id:this.id, position:this.position, goal:this.goal};
 	}
 	if (Graphics.isInitialized) this.initGraphics();
 }

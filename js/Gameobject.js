@@ -3,8 +3,10 @@ function Gameobject (arg) {
 	this.update = function() {
 	}
 	this.onEvent = function(e) {
+		return this;
 	}
 	this.asEvent = function() {
+		return {id:this.id};
 	}
 }
 

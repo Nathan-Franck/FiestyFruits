@@ -34,10 +34,25 @@
       Unit.enlist(new Unit(data));
       console.log("The unit's x pos: " + Unit.list[data.id].position.x);
     });
+    socket.on('updateGoal', function(data) {
+      var i;
+      for (i = 0; i < Unit.list.length; ++i) {
+        if ( Unit.list[i] != null ) {
+          Unit.list[i].goal.x = data.x;
+          Unit.list[i].goal.y = data.y;
+        }
+      }      
+    })
 
     $(window).mousedown(function(e) {
-      Unit.list[0].goal.x = e.pageX;
-      Unit.list[0].goal.y = e.pageY;
+      var i;
+      for (i = 0; i < Unit.list.length; ++i) {
+        if ( Unit.list[i] != null ) {
+          Unit.list[i].goal.x = e.pageX;
+          Unit.list[i].goal.y = e.pageY;
+          socket.emit('update', Unit.list[i].goal);          
+        }
+      }
     });
   </script>
 </body>

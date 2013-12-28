@@ -38,6 +38,9 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  socket.emit( 'update', Unit.create() );
+  io.sockets.emit( 'update', Unit.create() );
+  socket.on('update', function(data) {
+    socket.broadcast.emit('updateGoal', data);
+  });
 });
 

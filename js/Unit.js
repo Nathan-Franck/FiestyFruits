@@ -1,8 +1,8 @@
 function Unit (arg) {
 	console.log(arg);
 	this.id = arg.id;
-	this.position = arg.position;
-	this.goal = arg.goal;
+	this.position = new Point(arg.position.x, arg.position.y);
+	this.goal = new Point(arg.goal.x, arg.goal.y);
 	this.speed = 20;
 	this.sprite = null;
 
@@ -15,7 +15,6 @@ function Unit (arg) {
 		if (this.sprite != null){
 			this.sprite.position = this.position;
 		}
-		console.log(this.position);
 	}
 	this.onEvent = function(e) {
 		if (!Game.isServer) this.position = e.position;
@@ -45,10 +44,12 @@ Unit.create = function(){ //create new unit
 	for (i = 0; i < Unit.list.length; i++){
 		if (Unit.list[i] == null){
 			Unit.list[i] = unit;
+			unit.id = i;
 			return;
 		}
 	}
 	//or tack onto end of list
+	unit.id = Unit.list.length;
 	Unit.list.push(unit);
 	return unit;
 }
@@ -58,7 +59,6 @@ Unit.enlist = function(unit){
 		Unit.list.push(null);
 	}
 	Unit.list[unit.id] = unit;
-	console.log("HI"+unit)
 	return unit;
 }
 

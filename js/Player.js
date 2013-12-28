@@ -1,12 +1,12 @@
 function Player (arg){
-	//this.id = arg.id;
 	this.onEvent = function(e) {
-		console.log("Player recieved event "+this.id)
 		return this;
 	}
 	this.asEvent = function(){
 		return {id:this.id};
 	}
+	if (arg == null) return;
+	this.id = arg.hasOwnProperty("id")?arg.id:0;
 }
 
 Player.prototype = new Gameobject(); 

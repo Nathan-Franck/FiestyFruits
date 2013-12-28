@@ -1,6 +1,4 @@
-function Point (x, y){
-	this.x = x || 0;
-	this.y = y || 0;
+function Point (arg){
 
 	this.init = function(point){
 		this.x = point.x;
@@ -42,6 +40,10 @@ function Point (x, y){
 	this.getInfo = function(){
 		return "Point: {"+this.x +", "+ this.y+"}";
 	}
+
+	if (arg == null) return;
+	this.x = arg.x;
+	this.y = arg.y;
 }
 
 global.Point = Point;

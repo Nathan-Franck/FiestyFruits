@@ -41,7 +41,8 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('new player', Gameobject.add(new Player()));
+  var player = new Player();
+  socket.emit('assign player', Gameobject.add(player));
 
   //relay current game state
   for (var i in Gameobject.list){
@@ -51,8 +52,13 @@ io.sockets.on('connection', function (socket) {
     //if (g instanceof Base) socket.emit('new base', g);
   }
 
-  io.sockets.emit( 'new unit', Gameobject.add(new Unit({position:new Point(20, 20), goal:new Point(30, 30), speed:20})) );
+  for (var i = 0; i < 30; i ++){
+    io.sockets.emit( 'new unit', Gameobject.add(
+      new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), speed:20, ownerID:player.id})) 
+    );
+  }
   socket.on('update', function(data) {
+    if (player.id != data.ownerID) return;
     socket.broadcast.emit('update', Gameobject.list[data.id].onEvent(data).asEvent());
   });
 });

@@ -1,10 +1,4 @@
 function Unit (arg) {
-	this.id = arg.id;
-	this.position = new Point(arg.position.x, arg.position.y);
-	this.goal = new Point(arg.goal.x, arg.goal.y);
-	this.speed = arg.speed;
-	var sprite = null;
-
 	this.update = function() {
 		this.position.add(
 			new Point().init(this.goal)
@@ -17,8 +11,8 @@ function Unit (arg) {
 		}
 	}
 	this.onEvent = function(e) {
-		if (!Game.isServer) this.position = e.position;
-		this.goal = e.goal;
+		if (!Game.isServer) this.position = new Point(e.position);
+		this.goal = new Point(e.goal);
 		return this;
 	}
 	this.initGraphics = function() {
@@ -33,10 +27,17 @@ function Unit (arg) {
 		Graphics.stage.addChild(this.sprite);
 	}
 	this.asEvent = function() {
-		console.log(this.position);
-		return {id:this.id, position:this.position, goal:this.goal};
+		return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal};
 	}
+	var sprite = null;
 	if (Graphics.isInitialized) this.initGraphics();
+
+	if (arg == null) return;
+	this.id = arg.hasOwnProperty("id")?arg.id:0;
+	this.ownerID = arg.hasOwnProperty("ownerID")?arg.ownerID:0;
+	this.position = arg.hasOwnProperty("position")?new Point(arg.position):new Point(50, 50);
+	this.goal = arg.hasOwnProperty("goal")?new Point(arg.goal):new Point(100, 100);
+	this.speed = arg.hasOwnProperty("speed")?arg.speed:20;
 }
 
 Unit.prototype = new Gameobject(); 

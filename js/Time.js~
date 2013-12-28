@@ -1,0 +1,10 @@
+function Time() {
+	this.startTime = Date.getTime()/1000;
+}
+
+Time.startTime = 0;
+Time.deltaTime = 0;
+
+Time.update = function() {
+	
+}

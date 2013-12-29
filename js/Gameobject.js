@@ -8,6 +8,9 @@ function Gameobject (arg) {
 	this.asEvent = function() {
 		return {id:this.id};
 	}
+	this.destroy = function() {
+		Gameobject.list[this.id] = null;
+	}
 }
 
 Gameobject.list = new Array();
@@ -19,7 +22,7 @@ Gameobject.add = function(gameobject){ //create new gameobject
 		if (Gameobject.list[i] == null){
 			Gameobject.list[i] = gameobject;
 			gameobject.id = i;
-			return;
+			return gameobject;
 		}
 	}
 	//or tack onto end of list

@@ -29,6 +29,11 @@ function Unit (arg) {
 	this.asEvent = function() {
 		return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal};
 	}
+	this.destroy = function() {
+		if (this.sprite != null) Graphics.stage.removeChild(this.sprite);
+		this.sprite = null;
+		Gameobject.list[this.id] = null;
+	}
 	var sprite = null;
 	if (Graphics.isInitialized) this.initGraphics();
 

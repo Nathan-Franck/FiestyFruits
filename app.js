@@ -41,12 +41,15 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  var player = new Player();
-  socket.emit('assign player', Gameobject.add(player));
+  var player = Gameobject.add(new Player());
+  console.log(player);
+  socket.emit('assign player', player.asEvent());
+  io.sockets.emit('new player', player.asEvent());
 
   //relay current game state
   for (var i in Gameobject.list){
     var g = Gameobject.list[i];
+    if (g == null) continue;
     if (g instanceof Unit) socket.emit('new unit', g.asEvent());
     if (g instanceof Player) socket.emit('new player', g.asEvent());
     //if (g instanceof Base) socket.emit('new base', g);
@@ -61,5 +64,11 @@ io.sockets.on('connection', function (socket) {
     if (player.id != data.ownerID) return;
     socket.broadcast.emit('update', Gameobject.list[data.id].onEvent(data).asEvent());
   });
+
+  socket.on('disconnect', function() {
+    socket.broadcast.emit('remove player', player.asEvent());
+    player.destroy();
+    player = null;
+  })
 });
 

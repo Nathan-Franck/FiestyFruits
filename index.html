@@ -36,10 +36,14 @@
       player = new Player(data);
       Gameobject.enlist(player);
     });
+    socket.on('remove player', function(data) {
+      Gameobject.list[data.id].destroy();
+    })
     socket.on('new player', function(data) {
       Gameobject.enlist(new Player(data));
     });
     socket.on('new unit', function(data) {
+      console.log("new unit created "+data.id)
       Gameobject.enlist(new Unit(data));
     });
     socket.on('update', function(data) {

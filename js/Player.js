@@ -14,6 +14,7 @@ function Player (arg){
 	}
 	if (arg == null) return;
 	this.id = arg.hasOwnProperty("id")?arg.id:0;
+	this.selection = new Array();
 }
 
 Player.prototype = new Gameobject(); 

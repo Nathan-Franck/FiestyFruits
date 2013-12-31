@@ -2,6 +2,9 @@ function Gameobject (arg) {
 	this.id = 0;//arg.id;
 	this.update = function() {
 	}
+	this.onCreate = function(e) {
+		return this;
+	}
 	this.onEvent = function(e) {
 		return this;
 	}

@@ -1,4 +1,8 @@
 function Player (arg){
+
+	this.onCreate = function(e) {
+		Player.add(this);
+	}
 	this.onEvent = function(e) {
 		return this;
 	}
@@ -12,9 +16,37 @@ function Player (arg){
 		}
 		Gameobject.list[this.id] = null;
 	}
+
 	if (arg == null) return;
 	this.id = arg.hasOwnProperty("id")?arg.id:0;
 	this.selection = new Array();
+	this.playerId = 0;
+}
+
+Player.list = new Array();
+
+Player.add = function(player){ //create new player
+	var i;
+	//loop through existing list
+	for (i = 0; i < Player.list.length; i++){
+		if (Player.list[i] == null){
+			Player.list[i] = player;
+			player.playerId = i;
+			return player;
+		}
+	}
+	//or tack onto end of list
+	player.playerId = Player.list.length;
+	Player.list.push(player);
+	return player;
+}
+
+Player.enlist = function(player){
+	while (Player.list.length <= player.playerId) {
+		Player.list.push(null);
+	}
+	Player.list[player.playerId] = player;
+	return player;
 }
 
 Player.prototype = new Gameobject(); 

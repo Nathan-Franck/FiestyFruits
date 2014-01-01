@@ -1,6 +1,8 @@
 var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app)
-  , fs = require('fs');
+  , fs = require('fs')
+  , gm = require('gm');
+
 
 require('./js/Game.js')
 require('./js/Gameobject.js')
@@ -9,6 +11,17 @@ require('./js/Point.js')
 require('./js/Time.js')
 require('./js/Unit.js')
 require('./js/Graphics.js')
+
+// Make an example png of a flipped bunny
+gm("img/bunny.png").flip().write('img/bunny2.png', function(err) {
+  if(err) {
+    console.log(err);
+  }
+  else {
+    console.log("Da wabbit is flipped!");
+  }
+});
+
 
 Game.isServer = true;
 

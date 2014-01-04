@@ -8,7 +8,7 @@ Graphics.init = function (width, height){
 	// add the renderer view element to the DOM
 	document.body.appendChild(Graphics.renderer.view);
 	// create a texture from an image path
-	Unit.texture = PIXI.Texture.fromImage("img/bunny.png");
+	Unit.texture = PIXI.Texture.fromImage("img/apple_stand.png");
 	Graphics.isInitialized = true;
 }
 

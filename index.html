@@ -21,11 +21,10 @@
 </head>
 
 <body>
-	<h1>Fiesty Fruits</h1>
   <script>
     var socket = io.connect(window.location.protocol + "//" + window.location.host);
     var player = null;
-    Graphics.init();
+    Graphics.init( $(window).width(), $(window).height() );
     requestAnimFrame(animate);
     function animate() {
       requestAnimFrame(animate);

@@ -1,10 +1,10 @@
 var Graphics = {};
 
-Graphics.init = function (){
+Graphics.init = function (width, height){
 	// create an new instance of a pixi stage
 	Graphics.stage = new PIXI.Stage(0x66FF99);
 	// create a renderer instance
-	Graphics.renderer = PIXI.autoDetectRenderer(1024, 768);
+	Graphics.renderer = PIXI.autoDetectRenderer(width, height);
 	// add the renderer view element to the DOM
 	document.body.appendChild(Graphics.renderer.view);
 	// create a texture from an image path

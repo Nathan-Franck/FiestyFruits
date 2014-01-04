@@ -5,6 +5,11 @@ Graphics.init = function (width, height){
 	Graphics.stage = new PIXI.Stage(0x66FF99);
 	// create a renderer instance
 	Graphics.renderer = PIXI.autoDetectRenderer(width, height);
+
+	// add a background image
+	var background = PIXI.Sprite.fromImage("img/orchard.png");
+	Graphics.stage.addChild(background);
+
 	// add the renderer view element to the DOM
 	document.body.appendChild(Graphics.renderer.view);
 	// create a texture from an image path

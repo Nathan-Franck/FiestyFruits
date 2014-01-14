@@ -5,6 +5,7 @@ var app = require('http').createServer(handler)
 
 
 require('./js/Game.js')
+require('./js/IdArray.js')
 require('./js/Gameobject.js')
 require('./js/Player.js')
 require('./js/Point.js')
@@ -43,7 +44,7 @@ function handler (req, res) {
 }
 
 io.sockets.on('connection', function (socket) {
-  var player = Gameobject.add(new Player());
+  var player = Gameobject.list.add(new Player());
   console.log(player);
   socket.emit('assign player', player.asEvent());
   io.sockets.emit('new player', player.asEvent());
@@ -58,7 +59,7 @@ io.sockets.on('connection', function (socket) {
   }
 
   for (var i = 0; i < 30; i ++){
-    io.sockets.emit( 'new unit', Gameobject.add(
+    io.sockets.emit( 'new unit', Gameobject.list.add(
       new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), speed:20, ownerID:player.id})) 
     );
   }

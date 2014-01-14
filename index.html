@@ -12,9 +12,10 @@
   <script src="js/jquery-1.10.2.min.js"></script>
   <script src="js/pixi.js"></script>
   <script src="js/IdArray.js"></script>
+  <script src="js/Game.js"></script>
+  <script src="js/Connection.js"></script>
   <script src="js/Gameobject.js"></script>
   <script src="js/Unit.js"></script>
-  <script src="js/Game.js"></script>
   <script src="js/Player.js"></script>
   <script src="js/Time.js"></script>
   <script src="js/Point.js"></script>
@@ -24,7 +25,8 @@
 <body>
   <script>
     var socket = io.connect(window.location.protocol + "//" + window.location.host);
-    var player = null;
+    var connection = new Connection({player:null, socket:socket, io:io});
+    Game.registerEvents(connection);
     Graphics.init( $(window).width(), $(window).height() );
     requestAnimFrame(animate);
     function animate() {
@@ -32,38 +34,6 @@
       Game.update();
       Graphics.update();
     }
-    socket.on('assign player', function(data) {
-      player = new Player(data);
-      Gameobject.list.enlist(player);
-    });
-    socket.on('remove player', function(data) {
-      Gameobject.list[data.id].destroy();
-    })
-    socket.on('new player', function(data) {
-      Gameobject.list.enlist(new Player(data));
-    });
-    socket.on('new unit', function(data) {
-      console.log("new unit created "+data.id)
-      Gameobject.list.enlist(new Unit(data));
-    });
-    socket.on('update', function(data) {
-      var o = Gameobject.list[data.id]
-      console.log(data);
-      if (o != null) o.onEvent(data);     
-    })
-
-    $(window).mousedown(function(e) {
-      var i;
-      for (i = 0; i < Gameobject.list.length; ++i) {
-        if ( Gameobject.list[i] != null 
-          && Gameobject.list[i].hasOwnProperty("goal") 
-          && Gameobject.list[i].ownerID == player.id ) {
-          Gameobject.list[i].goal.x = e.pageX;
-          Gameobject.list[i].goal.y = e.pageY;
-          socket.emit('update', Gameobject.list[i].asEvent());       
-        }
-      }
-    });
   </script>
 </body>
 </html>

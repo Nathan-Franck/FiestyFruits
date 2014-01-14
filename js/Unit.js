@@ -45,6 +45,24 @@ function Unit (arg) {
 	this.speed = arg.hasOwnProperty("speed")?arg.speed:20;
 }
 
+Unit.registerEvents = function(connection){
+	if (Game.isServer){
+		for (var i = 0; i < 10; i ++){
+			connection.io.sockets.emit('new unit', Gameobject.list.add(
+				new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), 
+					speed:20, ownerID:connection.player.id})) 
+			);
+		}
+	}
+	else {
+		connection.socket.on('new unit', function(data) {
+			Gameobject.list.enlist(new Unit(data));
+    	});
+	}
+}
+
+Game.classList.push(Unit);
+
 Unit.prototype = new Gameobject(); 
 
 global.Unit = Unit;

@@ -24,4 +24,25 @@ Gameobject.updateAll = function(){
 	}
 }
 
+Gameobject.registerEvents = function(connection){
+	if (Game.isServer){
+		//relay current game state
+		for (var i in Gameobject.list){
+			var g = Gameobject.list[i];
+			if (g == null) continue;
+			if (g instanceof Unit) connection.socket.emit('new unit', g.asEvent());
+			if (g instanceof Player) connection.socket.emit('new player', g.asEvent());
+			//if (g instanceof Base) socket.emit('new base', g);
+		}
+	}
+	connection.socket.on('update', function(data) {
+		if (Game.isServer) if (connection.player.id != data.ownerID) return;
+		var o = Gameobject.list[data.id];
+		if (o != null) o.onEvent(data);
+		if (Game.isServer) connection.socket.broadcast.emit('update', o.asEvent());
+	})
+}
+
+Game.classList.push(Gameobject);
+
 global.Gameobject = Gameobject;

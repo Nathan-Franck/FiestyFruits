@@ -1,7 +1,9 @@
 function Player (arg){
+	this.local = false;
+	this.selection = new Array();
+	this.units = new Array();
 	if (arg == null) return;
 	this.id = arg.hasOwnProperty("id")?arg.id:0;
-	this.selection = new Array();
 	this.playerId = arg.hasOwnProperty("playerId")?arg.playerId:-1;
 }
 
@@ -23,6 +25,13 @@ Player.prototype.destroy = function(){
 	}
 	Gameobject.list[this.id] = null;
 }
+Player.prototype.commandUnits = function(e) {
+	for(var i = 0; i < this.units.length; i ++){
+		this.units[i].onEvent(e);
+	}
+	e.id = this.id;
+	return e;
+}
 
 Player.list = new IdArray("playerId");
 
@@ -38,6 +47,7 @@ Player.registerEvents = function(connection){
 	else {
 	    connection.socket.on('assign player', function(data) {
 	    	connection.player = new Player(data);
+	    	connection.player.local = true;
 	    	Gameobject.list.enlist(connection.player);
 	    });
 	    connection.socket.on('remove player', function(data) {
@@ -46,18 +56,15 @@ Player.registerEvents = function(connection){
 	    connection.socket.on('new player', function(data) {
 	    	Gameobject.list.enlist(new Player(data));
 	    });
-        $(window).mousedown(function(e) {
-			for (var i = 0; i < Gameobject.list.length; ++i) {
-				if ( Gameobject.list[i] != null 
-					&& Gameobject.list[i].hasOwnProperty("goal") 
-					&& Gameobject.list[i].ownerID == connection.player.id ) {
-					Gameobject.list[i].goal.x = e.pageX;
-					Gameobject.list[i].goal.y = e.pageY;
-					connection.socket.emit('update', Gameobject.list[i].asEvent());       
-				}
-			}
-		});
 	}
+
+	connection.socket.on('commandUnits', function(data) {
+		var o = Gameobject.list[data.id];
+		if (!Game.isServer || o == connection.player) {
+			o.commandUnits(data);
+			if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
+		}
+	});
 }
 
 Game.classList.push(Player);

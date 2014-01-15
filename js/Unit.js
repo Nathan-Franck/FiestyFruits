@@ -11,8 +11,8 @@ function Unit (arg) {
 		}
 	}
 	this.onEvent = function(e) {
-		if (!Game.isServer) this.position = new Point(e.position);
-		this.goal = new Point(e.goal);
+		if (!Game.isServer && e.hasOwnProperty("position")) this.position = new Point(e.position);
+		if (e.hasOwnProperty("goal")) this.goal = new Point(e.goal);
 		return this;
 	}
 	this.initGraphics = function() {
@@ -37,12 +37,16 @@ function Unit (arg) {
 	var sprite = null;
 	if (Graphics.isInitialized) this.initGraphics();
 
-	if (arg == null) return;
-	this.id = arg.hasOwnProperty("id")?arg.id:0;
-	this.ownerID = arg.hasOwnProperty("ownerID")?arg.ownerID:0;
-	this.position = arg.hasOwnProperty("position")?new Point(arg.position):new Point(50, 50);
-	this.goal = arg.hasOwnProperty("goal")?new Point(arg.goal):new Point(100, 100);
-	this.speed = arg.hasOwnProperty("speed")?arg.speed:20;
+	if (arg != null) {
+		this.id = arg.hasOwnProperty("id")?arg.id:0;
+		if (arg.hasOwnProperty("ownerID")) {
+			this.ownerID = arg.ownerID;
+			Gameobject.list[this.ownerID].units.push(this);
+		}
+		this.position = arg.hasOwnProperty("position")?new Point(arg.position):new Point(50, 50);
+		this.goal = arg.hasOwnProperty("goal")?new Point(arg.goal):new Point(100, 100);
+		this.speed = arg.hasOwnProperty("speed")?arg.speed:20;
+	}
 }
 
 Unit.registerEvents = function(connection){

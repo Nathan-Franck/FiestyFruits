@@ -8,7 +8,6 @@ function Unit (args) {
 	this.commandTime = 0;
 	this.commandDelay = .1+.5*((this.position.x*21+this.position.y*31)%17)/17.0;
 	this.hopTime = this.commandDelay;
-	console.log(this.commandDelay+" "+this.id);
 
 	Gameobject.list[this.ownerID].units.push(this);
 }
@@ -64,7 +63,6 @@ Unit.prototype.update = function() {
 
 Unit.prototype.onEvent = function(e) {
 	for (var key in e){
-		console.log(key);
 		switch(key){
 			case "position": if (!Game.isServer) this.position = new Point(e.position); break;
 			case "goal": this.goal = new Point(e.goal); this.commandTime = Time.time; break;

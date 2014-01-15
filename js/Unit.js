@@ -94,7 +94,7 @@ Unit.registerEvents = function(connection){
 		for (var i = 0; i < 10; i ++){
 			connection.io.sockets.emit('new unit', Gameobject.list.add(
 				new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), 
-					speed:20, radius:20, ownerID:connection.player.id})) 
+					speed:100, radius:10, ownerID:connection.player.id})) 
 			);
 		}
 	}

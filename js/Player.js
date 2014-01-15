@@ -24,33 +24,40 @@ Player.prototype.destroy = function(){
 	Gameobject.list[this.id] = null;
 }
 Player.prototype.commandUnits = function(e) {
+	e.id = this.id;
+	if (this.selection == null || this.selection.length == 0) return e;
 	if (this.local){
 		var intersection = Gameobject.intersection({point:e.goal});
 		if (intersection.length > 0) e.targetID = intersection[0].id;
 	}
 	var spacing = 40;
-	var side = Math.floor(Math.sqrt(this.units.length));
+	var side = Math.sqrt(this.selection.length);
 	for(var i = 0; i < this.selection.length; i ++){
 		var unit = Gameobject.list[this.selection[i]];
 		if (unit.ownerID != this.id) continue;
 		var e2 = {};
-		var x = Math.floor(i/side);
-		var y = Math.floor(i%side);
+		var x = Math.floor(i/Math.floor(side));
+		var y = Math.floor(i%Math.floor(side));
 		if (y%2 == 1) x += .5;
+		x -= side/2.0-.5;
+		y -= side/2.0-.5;
 		e2.goal = new Point(e.goal).add(new Point({x:x, y:y}).scale(spacing));
 		e2.targetID = e.targetID;
 		unit.onEvent(e2);
 	}
-	e.id = this.id;
 	return e;
 }
 
 Player.prototype.selectUnits = function(e) {
 	if (this.local){
-		var intersection = Gameobject.intersection(e);
+		var intersection = null;
+		if (e.hasOwnProperty("rect")) intersection = Gameobject.intersection({rect:e.rect});
+		if (e.hasOwnProperty("point") && intersection.length == 0)
+			intersection = Gameobject.intersection({point:e.point});
 		if (intersection.length > 0) {
 			e.selection = [];
 			for (var i = 0; i < intersection.length; i ++){
+				if (intersection[i].ownerID != this.id) continue;
 				e.selection.push(intersection[i].id);
 			}
 		}

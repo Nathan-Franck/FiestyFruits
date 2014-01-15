@@ -36,8 +36,8 @@ Player.prototype.commandUnits = function(e) {
 		var unit = Gameobject.list[this.selection[i]];
 		if (unit.ownerID != this.id) continue;
 		var e2 = {};
-		var x = Math.floor(i/Math.floor(side));
-		var y = Math.floor(i%Math.floor(side));
+		var y = Math.floor(i/Math.ceil(side));
+		var x = Math.floor(i%Math.ceil(side));
 		if (y%2 == 1) x += .5;
 		x -= side/2.0-.5;
 		y -= side/2.0-.5;

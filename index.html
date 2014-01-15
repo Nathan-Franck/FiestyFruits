@@ -27,12 +27,13 @@
   <script>
     var socket = io.connect(window.location.protocol + "//" + window.location.host);
     var connection = new Connection({player:null, socket:socket, io:io});
-    Game.registerEvents(connection);
     Graphics.init( $(window).width(), $(window).height() );
+    Game.registerEvents(connection);
     requestAnimFrame(animate);
     function animate() {
       requestAnimFrame(animate);
       Game.update();
+      Input.update();
       Graphics.update();
     }
   </script>

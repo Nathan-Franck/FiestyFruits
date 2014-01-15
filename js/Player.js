@@ -1,10 +1,8 @@
-function Player (arg){
+function Player (args){
 	this.local = false;
 	this.selection = new Array();
 	this.units = new Array();
-	if (arg == null) return;
-	this.id = arg.hasOwnProperty("id")?arg.id:0;
-	this.playerId = arg.hasOwnProperty("playerId")?arg.playerId:-1;
+	for(var key in args) this[key] = args[key];
 }
 
 Player.prototype = new Gameobject(); 

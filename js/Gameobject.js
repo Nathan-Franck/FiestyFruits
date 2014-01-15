@@ -1,19 +1,20 @@
-function Gameobject (arg) {
-	this.id = 0;//arg.id;
-	this.update = function() {
-	}
-	this.onCreate = function(e) {
-		return this;
-	}
-	this.onEvent = function(e) {
-		return this;
-	}
-	this.asEvent = function() {
-		return {id:this.id};
-	}
-	this.destroy = function() {
-		Gameobject.list[this.id] = null;
-	}
+function Gameobject (args) {
+	for(var key in args) this[key] = args[key];
+}
+
+Gameobject.prototype.update = function() {
+}
+Gameobject.prototype.onCreate = function(e) {
+	return this;
+}
+Gameobject.prototype.onEvent = function(e) {
+	return this;
+}
+Gameobject.prototype.asEvent = function() {
+	return {id:this.id};
+}
+Gameobject.prototype.destroy = function() {
+	Gameobject.list[this.id] = null;
 }
 
 Gameobject.list = new IdArray("id");

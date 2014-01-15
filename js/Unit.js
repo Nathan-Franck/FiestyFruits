@@ -1,52 +1,88 @@
-function Unit (arg) {
-	this.update = function() {
-		this.position.add(
-			new Point().init(this.goal)
-			.sub(this.position).normalize()
-			.scale(Time.deltaTime*this.speed)
-		);
-		//console.log(this.speed+" "+Time.deltaTime);
-		if (this.sprite != null){
-			this.sprite.position = this.position;
+function Unit (args) {
+	for(var key in args) this[key] = args[key];
+	this.initGraphics();
+	this.position = new Point(this.position);
+	this.goal = new Point(this.goal);
+	this.hopLength = .4;
+	this.hopHeight = 10;
+	this.commandTime = 0;
+	this.commandDelay = .1+.5*((this.position.x*21+this.position.y*31)%17)/17.0;
+	this.hopTime = this.commandDelay;
+	console.log(this.commandDelay+" "+this.id);
+
+	Gameobject.list[this.ownerID].units.push(this);
+}
+
+Unit.prototype = Object.create(Gameobject.prototype, {
+    constructor: {
+      value: Unit,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+
+Unit.prototype.initGraphics = function() {
+	if (!Graphics.isInitialized) return;
+	this.sprite = new PIXI.Sprite(Unit.texture);
+
+	// center the sprites anchor point
+	this.sprite.anchor.x = 0.5;
+	this.sprite.anchor.y = 0.5;
+
+	this.sprite.position = this.position;
+
+	Graphics.stage.addChild(this.sprite);
+}
+
+Unit.prototype.update = function() {
+	//move towards the goal
+	var bounce = false;
+	if (Time.time-this.commandTime > this.commandDelay){
+		bounce = true;
+		//if (this.position.)
+		var diff = new Point(this.goal).sub(this.position);
+		var distLeft = diff.magnitude();
+		var moveLength = Time.deltaTime*this.speed;
+		if (moveLength > distLeft) {
+			moveLength = distLeft;
+			bounce = false;
+		}
+		if (distLeft > 0) this.position.add(diff.scale(moveLength/distLeft));
+	}
+	//visuals and animation
+	if (!Game.isServer){
+		this.hopTime += Time.deltaTime;
+		if (this.hopTime > this.hopLength) {
+			if (bounce) this.hopTime -= this.hopLength;
+			else this.hopTime = this.hopLength;
+		}
+		this.sprite.position = new Point(this.position);
+		this.sprite.position.y -= Math.sin(this.hopTime/this.hopLength*Math.PI)*this.hopHeight;
+	}
+}
+
+Unit.prototype.onEvent = function(e) {
+	for (var key in e){
+		console.log(key);
+		switch(key){
+			case "position": if (!Game.isServer) this.position = new Point(e.position); break;
+			case "goal": this.goal = new Point(e.goal); this.commandTime = Time.time; break;
+			case "speed": if (!Game.isServer) this.speed = e.speed;
+			this[key] = e[key];
 		}
 	}
-	this.onEvent = function(e) {
-		if (!Game.isServer && e.hasOwnProperty("position")) this.position = new Point(e.position);
-		if (e.hasOwnProperty("goal")) this.goal = new Point(e.goal);
-		return this;
-	}
-	this.initGraphics = function() {
-		this.sprite = new PIXI.Sprite(Unit.texture);
+	return this;
+}
 
-		// center the sprites anchor point
-		this.sprite.anchor.x = 0.5;
-		this.sprite.anchor.y = 0.5;
+Unit.prototype.asEvent = function() {
+	return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal, speed:this.speed};
+}
 
-		this.sprite.position = this.position;
-
-		Graphics.stage.addChild(this.sprite);
-	}
-	this.asEvent = function() {
-		return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal};
-	}
-	this.destroy = function() {
-		if (this.sprite != null) Graphics.stage.removeChild(this.sprite);
-		this.sprite = null;
-		Gameobject.list[this.id] = null;
-	}
-	var sprite = null;
-	if (Graphics.isInitialized) this.initGraphics();
-
-	if (arg != null) {
-		this.id = arg.hasOwnProperty("id")?arg.id:0;
-		if (arg.hasOwnProperty("ownerID")) {
-			this.ownerID = arg.ownerID;
-			Gameobject.list[this.ownerID].units.push(this);
-		}
-		this.position = arg.hasOwnProperty("position")?new Point(arg.position):new Point(50, 50);
-		this.goal = arg.hasOwnProperty("goal")?new Point(arg.goal):new Point(100, 100);
-		this.speed = arg.hasOwnProperty("speed")?arg.speed:20;
-	}
+Unit.prototype.destroy = function() {
+	if (this.sprite != null) Graphics.stage.removeChild(this.sprite);
+	this.sprite = null;
+	Gameobject.list[this.id] = null;
 }
 
 Unit.registerEvents = function(connection){
@@ -65,8 +101,6 @@ Unit.registerEvents = function(connection){
 	}
 }
 
-Game.classList.push(Unit);
-
-Unit.prototype = new Gameobject(); 
+Game.classList.push(Unit); 
 
 global.Unit = Unit;

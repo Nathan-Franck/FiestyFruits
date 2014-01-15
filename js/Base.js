@@ -1,21 +1,21 @@
-function Base (arg) {
-	this.update = function() {
-		//spawn units
-	}
-	this.onEvent = function(e) {
-		return prototype.onEvent(e);
-	}
-	this.initGraphics = function() {
-		prototype.initGraphics();
-	}
-	this.asEvent = function() {
-		return prototype.asEvent();
-	}
-	this.destroy = function() {
-		prototype.destroy();
-	}
+function Base (args) {
+	for(var key in args) this[key] = args[key];
 }
-
 Base.prototype = new Unit(); 
+Base.prototype.update = function() {
+	//spawn units
+}
+Base.prototype.onEvent = function(e) {
+	return prototype.onEvent(e);
+}
+Base.prototype.initGraphics = function() {
+	prototype.initGraphics();
+}
+Base.prototype.asEvent = function() {
+	return prototype.asEvent();
+}
+Base.prototype.destroy = function() {
+	prototype.destroy();
+}
 
 global.Base = Base;

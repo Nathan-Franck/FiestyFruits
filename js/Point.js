@@ -40,10 +40,9 @@ function Point (arg){
 	this.getInfo = function(){
 		return "Point: {"+this.x +", "+ this.y+"}";
 	}
-
-	if (arg == null) return;
-	this.x = arg.x;
-	this.y = arg.y;
+	this.x = 0;
+	this.y = 0;
+	for (var key in arg) this[key] = arg[key];
 }
 
 global.Point = Point;

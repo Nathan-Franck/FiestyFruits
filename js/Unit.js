@@ -80,7 +80,7 @@ Unit.prototype.onEvent = function(e) {
 }
 
 Unit.prototype.asEvent = function() {
-	return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal, speed:this.speed};
+	return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal, speed:this.speed, radius:this.radius};
 }
 
 Unit.prototype.destroy = function() {

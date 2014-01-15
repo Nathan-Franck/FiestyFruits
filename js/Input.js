@@ -1,7 +1,7 @@
 var Input = {}
 
 Input.leftClick = function(e){
-	
+	connection.socket.emit('selectUnits', connection.player.selectUnits({point:new Point({x:e.pageX, y:e.pageY})}));
 }
 
 Input.middleClick = function(e){

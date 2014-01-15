@@ -9,7 +9,7 @@ Input.middleClick = function(e){
 }
 
 Input.rightClick = function(e){
-	connection.socket.emit('commandUnits', connection.player.commandUnits({goal:{x:e.pageX, y:e.pageY}}));
+	connection.socket.emit('commandUnits', connection.player.commandUnits({goal:new Point({x:e.pageX, y:e.pageY})}));
 }
 
 Input.registerEvents = function(connection){
@@ -19,7 +19,6 @@ Input.registerEvents = function(connection){
     		case 2: Input.middleClick(e); break;
     		case 3: Input.rightClick(e); break;
     	}
-		
 	});
 	window.oncontextmenu = function() {
 	    return false;

@@ -37,7 +37,7 @@ function Point (arg){
 		return Math.sqrt(this.x*this.x+this.y*this.y);
 	}
 
-	this.getInfo = function(){
+	this.toString = function(){
 		return "Point: {"+this.x +", "+ this.y+"}";
 	}
 	this.x = 0;

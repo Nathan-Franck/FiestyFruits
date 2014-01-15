@@ -3,6 +3,7 @@ function Unit (args) {
 	this.initGraphics();
 	this.position = new Point(this.position);
 	this.goal = new Point(this.goal);
+	this.targetID = null;
 	this.hopLength = .4;
 	this.hopHeight = 10;
 	this.commandTime = 0;
@@ -35,6 +36,10 @@ Unit.prototype.initGraphics = function() {
 }
 
 Unit.prototype.update = function() {
+	//define goal as target position
+	if (this.targetID != null){
+		this.goal = Gameobject.list[this.targetID].position;
+	}
 	//move towards the goal
 	var bounce = false;
 	if (Time.time-this.commandTime > this.commandDelay){
@@ -65,8 +70,9 @@ Unit.prototype.onEvent = function(e) {
 	for (var key in e){
 		switch(key){
 			case "position": if (!Game.isServer) this.position = new Point(e.position); break;
-			case "goal": this.goal = new Point(e.goal); this.commandTime = Time.time; break;
 			case "speed": if (!Game.isServer) this.speed = e.speed;
+			case "goal": this.goal = new Point(e.goal); this.commandTime = Time.time; break;
+			case "targetID": this.targetID = e.targetID;
 			this[key] = e[key];
 		}
 	}
@@ -88,7 +94,7 @@ Unit.registerEvents = function(connection){
 		for (var i = 0; i < 10; i ++){
 			connection.io.sockets.emit('new unit', Gameobject.list.add(
 				new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), 
-					speed:20, ownerID:connection.player.id})) 
+					speed:20, radius:20, ownerID:connection.player.id})) 
 			);
 		}
 	}

@@ -24,6 +24,8 @@ Player.prototype.destroy = function(){
 	Gameobject.list[this.id] = null;
 }
 Player.prototype.commandUnits = function(e) {
+	var intersection = Gameobject.intersection({point:e.goal});
+	if (intersection.length > 0) e.targetID = intersection[0].id;
 	var spacing = 40;
 	var side = Math.floor(Math.sqrt(this.units.length));
 	for(var i = 0; i < this.units.length; i ++){
@@ -32,6 +34,7 @@ Player.prototype.commandUnits = function(e) {
 		var y = Math.floor(i%side);
 		if (y%2 == 1) x += .5;
 		e2.goal = new Point(e.goal).add(new Point({x:x, y:y}).scale(spacing));
+		e2.targetID = e.targetID;
 		this.units[i].onEvent(e2);
 	}
 	e.id = this.id;

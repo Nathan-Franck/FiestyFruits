@@ -58,7 +58,6 @@ Player.prototype.commandUnits = function(e) {
 			var rowSize = Math.min(side+y, side*3-2-y);
 			var offset = (rowSize - 1)/2.0;
 			for (var x = -offset; x <= offset; x ++){
-				console.log("x: "+x);
 				//get next unit
 				var unit = null;
 				//while (unit == null || unit.ownerID != this.id) {
@@ -68,7 +67,7 @@ Player.prototype.commandUnits = function(e) {
 				if (unit == null || unit.ownerID != this.id) continue;//temp
 				//set the unit's goal
 				var data = {};
-				data.goal = new Point(e.goal).add(new Point({x:x, y:y-side+1}).scale(spacing));
+				data.goal = new Point(e.goal).add(new Point({x:x, y:y*Math.sqrt(3)/2-side+1}).scale(spacing));
 				data.targetID = e.targetID;
 				unit.onEvent(data);
 			}

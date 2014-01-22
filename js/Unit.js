@@ -10,7 +10,7 @@ function Unit (args) {
 	this.hopLength = .4;
 	this.hopHeight = 10;
 	this.commandTime = 0;
-	this.commandDelay = .1+.5*((this.position.x*21+this.position.y*31)%17)/17.0;
+	this.commandDelay = .075+.2*((this.position.x*21+this.position.y*31)%17)/17.0;
 	this.hopTime = this.commandDelay;
 	Gameobject.list[this.ownerID].units.push(this);
 }

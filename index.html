@@ -26,9 +26,11 @@
 <body>
   <script>
     var socket = io.connect(window.location.protocol + "//" + window.location.host);
-    var connection = new Connection({player:null, socket:socket, io:io});
+    Connection.io = io;
+    var connection = new Connection({player:null, socket:socket});
     Graphics.init( $(window).width(), $(window).height() );
-    Game.registerEvents(connection);
+    Graphics.compileRequiredTexturesList();
+    Game.registerAllEvents(connection);
     requestAnimFrame(animate);
     function animate() {
       requestAnimFrame(animate);

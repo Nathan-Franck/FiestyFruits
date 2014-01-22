@@ -73,6 +73,4 @@ Input.registerEvents = function(connection){
 	Graphics.stage.addChild(Input.gui);
 }
 
-Game.classList.push(Input);
-
 global.Input = Input;

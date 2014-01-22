@@ -2,7 +2,9 @@ function Player (args){
 	this.local = false;
 	this.selection = new Array();
 	this.units = new Array();
+	this.connection = null;
 	for(var key in args) this[key] = args[key];
+	if (this.connection != null) this.connection.player = this;
 }
 
 Player.prototype = new Gameobject(); 
@@ -34,7 +36,7 @@ Player.prototype.commandUnits = function(e) {
 	var side = Math.sqrt(this.selection.length);
 	for(var i = 0; i < this.selection.length; i ++){
 		var unit = Gameobject.list[this.selection[i]];
-		if (unit.ownerID != this.id) continue;
+		if (unit == null || unit.ownerID != this.id) continue;
 		var e2 = {};
 		var y = Math.floor(i/Math.ceil(side));
 		var x = Math.floor(i%Math.ceil(side));
@@ -74,7 +76,7 @@ Player.registerEvents = function(connection){
 		connection.socket.emit('assign player', connection.player.asEvent());
   		connection.socket.broadcast.emit('new player', connection.player.asEvent());
 		connection.socket.on('disconnect', function() {
-			connection.socket.broadcast.emit('remove player', connection.player.asEvent());
+			connection.socket.broadcast.emit('destroy', connection.player.asEvent());
 			connection.player.destroy();
 		})
 	}
@@ -82,11 +84,9 @@ Player.registerEvents = function(connection){
 	    connection.socket.on('assign player', function(data) {
 	    	connection.player = new Player(data);
 	    	connection.player.local = true;
+	    	connection.player.connection = connection;
 	    	Gameobject.list.enlist(connection.player);
 	    });
-	    connection.socket.on('remove player', function(data) {
-	    	Gameobject.list[data.id].destroy();
-	    })
 	    connection.socket.on('new player', function(data) {
 	    	Gameobject.list.enlist(new Player(data));
 	    });
@@ -107,7 +107,5 @@ Player.registerEvents = function(connection){
 		}
 	});
 }
-
-Game.classList.push(Player);
 
 global.Player = Player;

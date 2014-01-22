@@ -2,10 +2,11 @@ var Game = {};
 
 Game.isServer = false;
 
-Game.registerEvents = function(connection){
-	for (var i = 0; i < Game.classList.length; i ++){
-		if (Game.classList[i].hasOwnProperty("registerEvents"))
-			Game.classList[i].registerEvents(connection);
+Game.registerAllEvents = function(connection){
+	for (var key in global){
+		console.log(key);
+		if (global[key].hasOwnProperty("registerEvents"))
+			global[key].registerEvents(connection);
 	}
 }
 
@@ -13,7 +14,5 @@ Game.update = function(){ //simulate game for one tick
 	Time.update();
 	Gameobject.updateAll();
 }
-
-Game.classList = new Array();
 
 global.Game = Game;

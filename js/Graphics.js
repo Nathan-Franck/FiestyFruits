@@ -17,6 +17,38 @@ Graphics.init = function (width, height){
 	Graphics.isInitialized = true;
 }
 
+Graphics.compileRequiredTexturesList = function(){
+	Game.requiredTextures = {};
+	for (var key in global){
+		if (!global[key].hasOwnProperty("requiredTextures")) continue;
+		var requiredTextures = global[key].requiredTextures;
+		for (var j = 0; j < requiredTextures.length; j ++){
+			Game.requiredTextures[key] = requiredTextures(requiredTextures[j]);
+		}
+	}
+	console.log(Game.requiredTextures)
+}
+
+Graphics.renderColoredTextures = function(id, func){
+	var deferredCount = 0;
+	for (var name in requiredTextures){
+		var texInfo = requiredTextures[name];
+		if (!texInfo.colorCode) continue;
+		var commonAddress = "img/";
+		var address = commonAddress + id + "/";
+		texInfo.texture = PIXI.Texture.fromImage(address+name);
+		if (texInfo.texture == null){
+			deferredCount ++;
+			gm(commonAddress+name).flip().write(address+name, function(err) {
+				if(err) console.log(err);
+				else texInfo.texture = PIXI.Texture.fromImage(address+name);
+				if (--deferredCount <= 0) func();
+			});
+		}
+	}
+	if (deferredCount <= 0) func();
+}
+
 Graphics.update = function(){
 	Graphics.renderer.render(Graphics.stage);
 }

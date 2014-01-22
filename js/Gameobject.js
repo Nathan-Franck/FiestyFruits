@@ -15,6 +15,7 @@ Gameobject.prototype.asEvent = function() {
 }
 Gameobject.prototype.destroy = function() {
 	Gameobject.list[this.id] = null;
+	return this;
 }
 Gameobject.prototype.intersects = function(args){
 	if (!this.hasOwnProperty("radius")) return false;
@@ -53,6 +54,11 @@ Gameobject.registerEvents = function(connection){
 			//if (g instanceof Base) socket.emit('new base', g);
 		}
 	}
+	else {
+		connection.socket.on('destroy', function(data) {
+    		Gameobject.list[data].destroy();
+    	})
+	}
 	connection.socket.on('update', function(data) {
 		if (Game.isServer) if (connection.player.id != data.ownerID) return;
 		var o = Gameobject.list[data.id];
@@ -64,11 +70,9 @@ Gameobject.registerEvents = function(connection){
 Gameobject.intersection = function(args){
 	var intersected = [];
 	for (var i = 0; i < Gameobject.list.length; i++){
-		if (Gameobject.list[i].intersects(args)) intersected.push(Gameobject.list[i]);
+		if (Gameobject.list[i] != null && Gameobject.list[i].intersects(args)) intersected.push(Gameobject.list[i]);
 	}
 	return intersected;
 }
-
-Game.classList.push(Gameobject);
 
 global.Gameobject = Gameobject;

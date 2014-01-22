@@ -33,7 +33,8 @@ Player.prototype.commandUnits = function(e) {
 		if (intersection.length > 0) e.targetID = intersection[0].id;
 	}
 	var spacing = 40;
-	var side = Math.sqrt(this.selection.length);
+	//old squarer formation
+	/*var side = Math.sqrt(this.selection.length);
 	for(var i = 0; i < this.selection.length; i ++){
 		var unit = Gameobject.list[this.selection[i]];
 		if (unit == null || unit.ownerID != this.id) continue;
@@ -46,6 +47,69 @@ Player.prototype.commandUnits = function(e) {
 		e2.goal = new Point(e.goal).add(new Point({x:x, y:y}).scale(spacing));
 		e2.targetID = e.targetID;
 		unit.onEvent(e2);
+	}*/
+	//hexagon formation (works great for same-sided formations)
+	var selectedID = 0;
+	var side = (Math.sqrt(12*this.selection.length-3)-3)/6+1; //define the side size of the hexagon based on the number of units
+	if (side-Math.floor(side) <= 0) { //if the hexagon will form perfectly, use this algorithm
+		//fill the hexagon with units until no more units
+		for (var y = 0; y < side*2-1; y++){
+			console.log(y);
+			var rowSize = Math.min(side+y, side*3-2-y);
+			var offset = (rowSize - 1)/2.0;
+			for (var x = -offset; x <= offset; x ++){
+				console.log("x: "+x);
+				//get next unit
+				var unit = null;
+				//while (unit == null || unit.ownerID != this.id) {
+					if (selectedID >= this.selection.Length) return e;
+					unit = Gameobject.list[this.selection[selectedID++]];
+				//}
+				if (unit == null || unit.ownerID != this.id) continue;//temp
+				//set the unit's goal
+				var data = {};
+				data.goal = new Point(e.goal).add(new Point({x:x, y:y-side+1}).scale(spacing));
+				data.targetID = e.targetID;
+				unit.onEvent(data);
+			}
+		}
+	}
+	else {
+		//hexagon formation v2 (works great for uneven-sided formations)
+		var up = true;
+		var r = 0;
+		var angle = 0;
+		var offset = 0;
+		var point = new Point({x:0, y:0});
+		var unit = Gameobject.list[this.selection[selectedID++]];
+		for (var i = 0; true; i ++){//layers of triangle
+			if (i%2) {
+				offset = 0.25;
+				r = spacing/Math.sqrt(12);
+			} else {
+				offset = 0.75;
+				r = spacing/Math.sqrt(3);
+			}
+			x = Math.floor((i + 1)/2.0);
+			r += x*spacing*Math.sqrt(3)/2;
+			for (var t = offset; t < 3; t ++){//triangle sides
+				angle = t*2*Math.PI/3.0;
+				side = Math.floor(i/2)+1;
+				point.x = Math.cos(angle)*r;
+				point.y = Math.sin(angle)*r;
+				var maxDisp = (side-1)/2.0*spacing;
+				for (var y = -maxDisp; y <= maxDisp; y += spacing){//side
+					var pos = new Point(point);
+					pos.x -= Math.sin(angle)*y;
+					pos.y += Math.cos(angle)*y;
+					//set the unit's goal
+					unit.onEvent({goal:new Point(e.goal).add(pos), targetID:e.targetID});
+					//get next unit
+					unit = Gameobject.list[this.selection[selectedID++]];
+					if (selectedID >= this.selection.Length) return e;
+				}
+			}
+		}
 	}
 	return e;
 }

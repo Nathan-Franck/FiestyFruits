@@ -121,7 +121,7 @@ Unit.prototype.destroy = function() {
 
 Unit.registerEvents = function(connection){
 	if (Game.isServer){
-		for (var i = 0; i < 10; i ++){
+		for (var i = 0; i < 41; i ++){
 			connection.io.sockets.emit('new unit', Gameobject.list.add(
 				new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), 
 					speed:100, radius:10, ownerID:connection.player.id}))

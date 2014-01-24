@@ -26,9 +26,9 @@ require('./js/Graphics.js')
 Graphics.compileRequiredTexturesList();
 Game.isServer = true;
 
-// setInterval(function() {
-//     Game.update();
-// }, 33);
+setInterval(function() {
+    Game.update();
+}, 33);
 
 app.listen(1337);
 

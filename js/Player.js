@@ -55,11 +55,11 @@ Player.prototype.commandUnits = function(e) {
 			for (var x = -offset; x <= offset; x ++){
 				//command unit
 				unit.onEvent({
-					goal: new Point(e.goal).add(new Point({x:x, y:y*Math.sqrt(3)/2-side+1}).scale(spacing))
-					targetID: e.targetID;
+					goal: new Point(e.goal).add(new Point({x:x, y:y*Math.sqrt(3)/2-side+1}).scale(spacing)),
+					targetID: e.targetID
 				});
 				//get next unit
-				if (selectedID >= this.selection.Length) return e;
+				if (selectedID >= this.selection.length) return e;
 				unit = Gameobject.list[this.selection[selectedID++]];
 			}
 		}
@@ -96,7 +96,7 @@ Player.prototype.commandUnits = function(e) {
 					if (unit != null) unit.onEvent({goal:new Point(e.goal).add(pos), targetID:e.targetID});
 					//get next unit
 					unit = Gameobject.list[this.selection[selectedID++]];
-					if (selectedID >= this.selection.Length) return e;
+					if (selectedID >= this.selection.length) return e;
 				}
 			}
 		}
@@ -160,11 +160,11 @@ Player.registerEvents = function(connection){
 
 	//unit commands done per player, not per unit to lower bandwidth
 	connection.socket.on('commandUnits', function(data) {
-		var o = Gameobject.list[data.id];
-		if (!Game.isServer || o == connection.player) {
-			o.commandUnits(data);
-			if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
-		}
+		// var o = Gameobject.list[data.id];
+		// if (!Game.isServer || o != connection.player) {
+		// 	o.commandUnits(data);
+		// 	if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
+		// }
 	});
 	//selecting units comes across the network for unit commanding to work properly
 	connection.socket.on('selectUnits', function(data) {

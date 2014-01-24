@@ -32,13 +32,13 @@ setInterval(function() {
 
 app.listen(1337);
 
-var blacklist = {"/app.js":true}; //any file put in here can not be requested from the client
+var blacklist = {"/app.js":true}; // any file put in here can not be requested from the client
 
 
 function handler (req, res) {
   console.log(req.url);
   var fileName;
-  if (blacklist.hasOwnProperty(req.url)) return res.end('Error loading '+req.url); //if this file is blacklisted, hide it from the client
+  if (blacklist.hasOwnProperty(req.url)) return res.end('Error loading '+req.url); // if this file is blacklisted, hide it from the client
   if ( req.url == '/') {
     fileName = '/index.html';
   }

@@ -1,3 +1,4 @@
+//player associated with each connecting client, has a list of units, can select and command units`
 function Player (args){
 	this.local = false;
 	this.selection = new Array();
@@ -7,17 +8,22 @@ function Player (args){
 	if (this.connection != null) this.connection.player = this;
 }
 
+//inherits from gameobject
 Player.prototype = new Gameobject(); 
 
+//when created, add it to the player list
 Player.prototype.onCreate = function(e) {
 	Player.list.enlist(this);
 }
+//handle event
 Player.prototype.onEvent = function(e) {
 	return this;
 }
+//send vital information
 Player.prototype.asEvent = function(){
 	return {id:this.id};
 }
+//when player is destroyed, destroy all the units the player owns
 Player.prototype.destroy = function(){
 	for (var i in Gameobject.list){
 		if (Gameobject.list[i] == null) continue;
@@ -25,31 +31,20 @@ Player.prototype.destroy = function(){
 	}
 	Gameobject.list[this.id] = null;
 }
+//called when mouse clicks - tells units to go somewhere
 Player.prototype.commandUnits = function(e) {
 	e.id = this.id;
+	//if there's nothing selected, return immediately
 	if (this.selection == null || this.selection.length == 0) return e;
+	//if this is the client's click, see if there's a unit to target (expensive [which is why it's only on the client])
 	if (this.local){
 		var intersection = Gameobject.intersection({point:e.goal});
 		if (intersection.length > 0) e.targetID = intersection[0].id;
 	}
-	var spacing = 40;
-	//old squarer formation
-	/*var side = Math.sqrt(this.selection.length);
-	for(var i = 0; i < this.selection.length; i ++){
-		var unit = Gameobject.list[this.selection[i]];
-		if (unit == null || unit.ownerID != this.id) continue;
-		var e2 = {};
-		var y = Math.floor(i/Math.ceil(side));
-		var x = Math.floor(i%Math.ceil(side));
-		if (y%2 == 1) x += .5;
-		x -= side/2.0-.5;
-		y -= side/2.0-.5;
-		e2.goal = new Point(e.goal).add(new Point({x:x, y:y}).scale(spacing));
-		e2.targetID = e.targetID;
-		unit.onEvent(e2);
-	}*/
 	//hexagon formation (works great for same-sided formations)
+	var spacing = 40;
 	var selectedID = 0;
+	var unit = Gameobject.list[this.selection[selectedID++]];
 	var side = (Math.sqrt(12*this.selection.length-3)-3)/6+1; //define the side size of the hexagon based on the number of units
 	if (side-Math.floor(side) <= 0) { //if the hexagon will form perfectly, use this algorithm
 		//fill the hexagon with units until no more units
@@ -58,29 +53,25 @@ Player.prototype.commandUnits = function(e) {
 			var rowSize = Math.min(side+y, side*3-2-y);
 			var offset = (rowSize - 1)/2.0;
 			for (var x = -offset; x <= offset; x ++){
+				//command unit
+				unit.onEvent({
+					goal: new Point(e.goal).add(new Point({x:x, y:y*Math.sqrt(3)/2-side+1}).scale(spacing))
+					targetID: e.targetID;
+				});
 				//get next unit
-				var unit = null;
-				//while (unit == null || unit.ownerID != this.id) {
-					if (selectedID >= this.selection.Length) return e;
-					unit = Gameobject.list[this.selection[selectedID++]];
-				//}
-				if (unit == null || unit.ownerID != this.id) continue;//temp
-				//set the unit's goal
-				var data = {};
-				data.goal = new Point(e.goal).add(new Point({x:x, y:y*Math.sqrt(3)/2-side+1}).scale(spacing));
-				data.targetID = e.targetID;
-				unit.onEvent(data);
+				if (selectedID >= this.selection.Length) return e;
+				unit = Gameobject.list[this.selection[selectedID++]];
 			}
 		}
 	}
 	else {
 		//hexagon formation v2 (works great for uneven-sided formations)
+		//basically adds units in a rough triangle formation spiralling outwards forming a hexagonal shape
 		var up = true;
 		var r = 0;
 		var angle = 0;
 		var offset = 0;
 		var point = new Point({x:0, y:0});
-		var unit = Gameobject.list[this.selection[selectedID++]];
 		for (var i = 0; true; i ++){//layers of triangle
 			if (i%2) {
 				offset = 0.25;
@@ -101,8 +92,8 @@ Player.prototype.commandUnits = function(e) {
 					var pos = new Point(point);
 					pos.x -= Math.sin(angle)*y;
 					pos.y += Math.cos(angle)*y;
-					//set the unit's goal
-					unit.onEvent({goal:new Point(e.goal).add(pos), targetID:e.targetID});
+					//command unit
+					if (unit != null) unit.onEvent({goal:new Point(e.goal).add(pos), targetID:e.targetID});
 					//get next unit
 					unit = Gameobject.list[this.selection[selectedID++]];
 					if (selectedID >= this.selection.Length) return e;
@@ -113,12 +104,17 @@ Player.prototype.commandUnits = function(e) {
 	return e;
 }
 
+//box/point select of units
+//if no unit is captured by box select, try point select
 Player.prototype.selectUnits = function(e) {
 	if (this.local){
 		var intersection = null;
+		//rectangle check
 		if (e.hasOwnProperty("rect")) intersection = Gameobject.intersection({rect:e.rect});
+		//point check
 		if (e.hasOwnProperty("point") && intersection.length == 0)
 			intersection = Gameobject.intersection({point:e.point});
+		//check if selected units are owned by this player or not (should probably do this check earlier in the future)
 		if (intersection.length > 0) {
 			e.selection = [];
 			for (var i = 0; i < intersection.length; i ++){
@@ -132,29 +128,37 @@ Player.prototype.selectUnits = function(e) {
 	return e;
 }
 
+//list of all players
 Player.list = new IdArray("playerId");
 
+//register events 
 Player.registerEvents = function(connection){
+	//game server assigns new player on initial connect
 	if (Game.isServer){
 		connection.socket.emit('assign player', connection.player.asEvent());
   		connection.socket.broadcast.emit('new player', connection.player.asEvent());
+  		//when player disconnected, destroy the player object
 		connection.socket.on('disconnect', function() {
 			connection.socket.broadcast.emit('destroy', connection.player.asEvent());
 			connection.player.destroy();
 		})
 	}
+	//client events
 	else {
+		//get assigned player
 	    connection.socket.on('assign player', function(data) {
 	    	connection.player = new Player(data);
 	    	connection.player.local = true;
 	    	connection.player.connection = connection;
 	    	Gameobject.list.enlist(connection.player);
 	    });
+	    //acknowledge other new player
 	    connection.socket.on('new player', function(data) {
 	    	Gameobject.list.enlist(new Player(data));
 	    });
 	}
 
+	//unit commands done per player, not per unit to lower bandwidth
 	connection.socket.on('commandUnits', function(data) {
 		var o = Gameobject.list[data.id];
 		if (!Game.isServer || o == connection.player) {
@@ -162,6 +166,7 @@ Player.registerEvents = function(connection){
 			if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
 		}
 	});
+	//selecting units comes across the network for unit commanding to work properly
 	connection.socket.on('selectUnits', function(data) {
 		var o = Gameobject.list[data.id];
 		if (!Game.isServer || o == connection.player) {

@@ -1,3 +1,4 @@
+// all in-game commandable objects, including fruits and bases
 function Unit (args) {
 	for(var key in args) this[key] = args[key];
 	this.initGraphics();
@@ -15,6 +16,7 @@ function Unit (args) {
 	Gameobject.list[this.ownerID].units.push(this);
 }
 
+// inherits from gameobject
 Unit.prototype = Object.create(Gameobject.prototype, {
     constructor: {
       value: Unit,
@@ -24,6 +26,7 @@ Unit.prototype = Object.create(Gameobject.prototype, {
     }
   });
 
+// initialize the graphics for this unit
 Unit.prototype.initGraphics = function() {
 	if (!Graphics.isInitialized) return;
 	this.sprite = new PIXI.Sprite(Unit.texture);
@@ -37,9 +40,10 @@ Unit.prototype.initGraphics = function() {
 	Graphics.stage.addChild(this.sprite);
 }
 
+// animate the unit
 Unit.prototype.update = function() {
 	var bounce = false;
-	//attacking logic
+	// attacking logic
 	if (this.attackingID != null){
 		var attacking = Gameobject.list[this.attackingID];
 		if (attacking == null) this.attackingID = null;
@@ -51,7 +55,7 @@ Unit.prototype.update = function() {
 		}
 	}
 	else {
-		//define goal as target position
+		// define goal as target position
 		var target;
 		if (this.targetID != null){
 			target = Gameobject.list[this.targetID];
@@ -61,14 +65,13 @@ Unit.prototype.update = function() {
 				this.goal = this.position;
 			}
 		}
-		//move towards the goal
+		// move towards the goal
 		if (Time.time-this.commandTime > this.commandDelay){
 			bounce = true;
 			var diff = new Point(this.goal).sub(this.position);
 			var distLeft = diff.magnitude();
 			var moveLength = Time.deltaTime*this.speed;
-			
-			
+			// bouce towards target/goal
 			if (target != null && distLeft < target.radius+this.radius){
 				moveLength = 0;
 				if (target.ownerID != this.ownerID){
@@ -76,6 +79,7 @@ Unit.prototype.update = function() {
 					target.attackingID = this.id;
 				}
 				bounce = false;
+			// reached target - stop bouncing
 			} else if (moveLength > distLeft) {
 				moveLength = distLeft;
 				bounce = false;
@@ -83,7 +87,7 @@ Unit.prototype.update = function() {
 			if (distLeft > 0) this.position.add(diff.scale(moveLength/distLeft));
 		}
 	}
-	//visuals and animation
+	// visuals and animation
 	if (!Game.isServer){
 		this.hopTime += Time.deltaTime;
 		if (this.hopTime > this.hopLength) {
@@ -95,6 +99,7 @@ Unit.prototype.update = function() {
 	}
 }
 
+// handle event - assign position and speed only if from server, server only accepts goal and targetID update
 Unit.prototype.onEvent = function(e) {
 	for (var key in e){
 		switch(key){
@@ -108,10 +113,12 @@ Unit.prototype.onEvent = function(e) {
 	return this;
 }
 
+// send game-important variables as event
 Unit.prototype.asEvent = function() {
 	return {id:this.id, ownerID:this.ownerID, position:this.position, goal:this.goal, speed:this.speed, radius:this.radius};
 }
 
+// remove the unit from the game list
 Unit.prototype.destroy = function() {
 	if (this.sprite != null) Graphics.stage.removeChild(this.sprite);
 	this.sprite = null;
@@ -119,6 +126,7 @@ Unit.prototype.destroy = function() {
 	return this;
 }
 
+// register what network events the unit object transmits and recieves
 Unit.registerEvents = function(connection){
 	if (Game.isServer){
 		for (var i = 0; i < 41; i ++){
@@ -135,6 +143,7 @@ Unit.registerEvents = function(connection){
 	}
 }
 
+// require unit textures
 Unit.requiredTextures = {"apple.png":{colorCode:true}};
 
 global.Unit = Unit;

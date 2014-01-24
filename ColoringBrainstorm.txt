@@ -1,0 +1,23 @@
+Client joins
+Server constructs colored images
+	Check if images already exist
+	Create new folder space for images
+	Process all images and place in new folder
+Server allows connect
+Client retrieves colored images
+	Retrieve from folder corresponding to playerid
+
+Structure
+	classes can have required graphics in the form of an array of objects
+		name: name of texture variable in class
+		loc:
+	client/server compiles list of graphics required from all relevant classes
+
+Best for coding
+	1. class requires color coded image
+	2. in class when a sprite graphic is created, it's created from a location: "bunny.png"
+	var sprite = Graphics.CreateSprite({loc:"bunny.png", teamColor:true})
+		The problem with this is that the server won't know immediatley what will be requested.
+
+Bunny.requiredTextures(["bunny.png", "attack.png"]);
+	

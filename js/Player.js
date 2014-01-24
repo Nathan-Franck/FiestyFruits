@@ -160,11 +160,11 @@ Player.registerEvents = function(connection){
 
 	//unit commands done per player, not per unit to lower bandwidth
 	connection.socket.on('commandUnits', function(data) {
-		// var o = Gameobject.list[data.id];
-		// if (!Game.isServer || o != connection.player) {
-		// 	o.commandUnits(data);
-		// 	if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
-		// }
+		var o = Gameobject.list[data.id];
+		if (!Game.isServer || o != connection.player) {
+			o.commandUnits(data);
+			if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
+		}
 	});
 	//selecting units comes across the network for unit commanding to work properly
 	connection.socket.on('selectUnits', function(data) {

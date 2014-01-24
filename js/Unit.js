@@ -29,7 +29,7 @@ Unit.prototype = Object.create(Gameobject.prototype, {
 // initialize the graphics for this unit
 Unit.prototype.initGraphics = function() {
 	if (!Graphics.isInitialized) return;
-	this.sprite = new PIXI.Sprite(Unit.texture);
+	this.sprite = new PIXI.Sprite(Graphics.retrieveColoredTexture("apple_stand.png"));
 
 	// center the sprites anchor point
 	this.sprite.anchor.x = 0.5;

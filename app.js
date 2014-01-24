@@ -62,6 +62,8 @@ Connection.io = io;
 io.sockets.on('connection', function (socket) {
   var player = Gameobject.list.add(new Player());
   var connection = new Connection({player:player, socket:socket, io:io});
-  Game.registerAllEvents(connection);
+  Graphics.renderColoredTextures(player.playerID, function(){
+    Game.registerAllEvents(connection);
+  }
 });
 

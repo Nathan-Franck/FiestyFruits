@@ -21,7 +21,7 @@ Graphics.init = function (width, height){
 
 // gather the list of textures required from all the game objects in the global space
 Graphics.compileRequiredTexturesList = function(){
-	Game.requiredTextures = {};
+	Game.images = {};
 	//go through all the global objects
 	for (var key in global){
 		//if there's no required textures, move on...
@@ -29,7 +29,7 @@ Graphics.compileRequiredTexturesList = function(){
 		//get required textures and add to the main list
 		var requiredTextures = global[key].requiredTextures;
 		for (var j = 0; j < requiredTextures.length; j ++){
-			Game.requiredTextures[key] = requiredTextures(requiredTextures[j]);
+			Game.images[key] = requiredTextures(requiredTextures[j]);
 		}
 	}
 }
@@ -38,32 +38,69 @@ Graphics.compileRequiredTexturesList = function(){
 Graphics.renderColoredTextures = function(id, func){
 	var deferredCount = 0;
 	// go through the required texture list
-	for (var name in requiredTextures){
+	for (var name in images){
 		// get info - address
-		var texInfo = requiredTextures[name];
-		if (!texInfo.colorCode) continue;
-		var commonAddress = "img/";
-		var address = commonAddress + id + "/";
+		var img = images[name];
+		if (!img.colorCode) continue;
+		//add id array to texture info
+		if (img.textures == null) img.textures = new IdArray("colorID");
 		// try to get texture from address
-		texInfo.texture = PIXI.Texture.fromImage(address+name);
+		var address = commonAddress + id + "/";
+		var tex = PIXI.Texture.fromImage(address+name);
 		// if texture isn't there yet, make the file
-		if (texInfo.texture == null){
+		if (img.texture == null){
 			deferredCount ++;
 			//render the texture
-			gm(commonAddress+name).flip().write(address+name, function(err) {
+			gm(Graphics.commonAddress+name).flip().write(address+name, function(err) {
 				if(err) console.log(err);
-				else texInfo.texture = PIXI.Texture.fromImage(address+name);
+				else {
+					tex = PIXI.Texture.fromImage(address+name);
+					tex.colorID = id;
+					img.textures.enlist(tex);
+				}
 				//once no more deferred functions need to be executed, run the function
 				if (--deferredCount <= 0) func();
 			});
 		}
+		else {
+			tex.colorID = id;
+			img.textures.enlist(tex);
+		}
 	}
 	if (deferredCount <= 0) func();
+}
+
+Graphics.addressFromName = function(name, id){
+	return Graphics.commonAddress+"/"+name;
+}
+
+Graphics.coloredAddressFromName = function(name, id){
+	return Graphics.commonAddress+"/"+id+"/"+name;
+}
+
+Graphics.retrieveTexture = function(name){
+	var img = images[addr];
+	if (img == null) return null;
+	if (img.texture == null){
+		img.texture = PIXI.Texture.fromImage(Graphics.addressFromName(name));
+	}
+	return img.texture;
+}
+
+Graphics.retrieveColoredTexture = function(name, id){
+	var img = images[addr];
+	if (img == null) return null;
+	if (img.textures.length <= id || img.textures[id] == null){
+		img.textures.enlist(PIXI.Texture.fromImage(Graphics.coloredAddressFromName(name, id)));
+	}
+	return img.textures[id];
 }
 
 // redraw the game scene
 Graphics.update = function(){
 	Graphics.renderer.render(Graphics.stage);
 }
+
+Graphics.commonAddress = "img/";
 
 global.Graphics = Graphics;

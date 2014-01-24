@@ -95,8 +95,8 @@ Player.prototype.commandUnits = function(e) {
 					//command unit
 					if (unit != null) unit.onEvent({goal:new Point(e.goal).add(pos), targetID:e.targetID});
 					//get next unit
+					if (selectedID > this.selection.length) return e;
 					unit = Gameobject.list[this.selection[selectedID++]];
-					if (selectedID >= this.selection.length) return e;
 				}
 			}
 		}

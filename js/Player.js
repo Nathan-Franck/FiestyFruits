@@ -159,6 +159,12 @@ Player.registerEvents = function(connection){
 	    connection.socket.on('new player', function(data) {
 	    	Gameobject.list.enlist(new Player(data));
 	    });
+	    //when server disconnects, remove all gameobjects entirely
+	    connection.socket.on('disconnect', function() {
+	    	for (var i = 0; i < Gameobject.list.length; i ++){
+	    		if (Gameobject.list[i] != null) Gameobject.list[i].destroy();
+	    	}
+	    });
 	}
 
 	//unit commands done per player, not per unit to lower bandwidth

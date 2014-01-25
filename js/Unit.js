@@ -29,7 +29,7 @@ Unit.prototype = Object.create(Gameobject.prototype, {
 // initialize the graphics for this unit
 Unit.prototype.initGraphics = function() {
 	if (!Graphics.isInitialized) return;
-	this.sprite = new PIXI.Sprite(Graphics.retrieveColoredTexture("apple_stand.png", Gameobject.list[this.ownerID].playerID));
+	this.sprite = new PIXI.Sprite(Graphics.retrieveColoredTexture("apple.png", Gameobject.list[this.ownerID].playerID));
 
 	// center the sprites anchor point
 	this.sprite.anchor.x = 0.5;
@@ -129,7 +129,7 @@ Unit.prototype.destroy = function() {
 // register what network events the unit object transmits and recieves
 Unit.registerEvents = function(connection){
 	if (Game.isServer){
-		for (var i = 0; i < 30; i ++){
+		for (var i = 0; i < 36; i ++){
 			connection.io.sockets.emit('new unit', Gameobject.list.add(
 				new Unit({position:new Point({x:20+i*10, y:20}), goal:new Point({x:20, y:20}), 
 					speed:100, radius:10, ownerID:connection.player.id}))
@@ -144,6 +144,6 @@ Unit.registerEvents = function(connection){
 }
 
 // require unit textures
-Unit.requiredTextures = {"apple_stand.png":{colorCode:true}};
+Unit.requiredTextures = {"apple.png":{colorCode:true}};
 
 global.Unit = Unit;

@@ -142,7 +142,7 @@ Player.registerEvents = function(connection){
   		connection.socket.broadcast.emit('new player', connection.player.asEvent());
   		//when player disconnected, destroy the player object
 		connection.socket.on('disconnect', function() {
-			connection.socket.broadcast.emit('destroy', connection.player.asEvent());
+			connection.socket.broadcast.emit('destroy', connection.player.id);
 			connection.player.destroy();
 		})
 	}

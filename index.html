@@ -15,28 +15,45 @@
   <script src="js/Game.js"></script>
   <script src="js/Input.js"></script>
   <script src="js/Connection.js"></script>
+  <script src="js/World.js"></script>
   <script src="js/Gameobject.js"></script>
   <script src="js/Unit.js"></script>
   <script src="js/Player.js"></script>
   <script src="js/Time.js"></script>
   <script src="js/Point.js"></script>
   <script src="js/Graphics.js"></script>
+  <script src="js/stats.min.js"></script>
 </head>
 
 <body>
   <script>
+
+
     var socket = io.connect(window.location.protocol + "//" + window.location.host);
     Connection.io = io;
     var connection = new Connection({player:null, socket:socket});
-    Graphics.init( $(window).width(), $(window).height() );
-    Graphics.compileRequiredTexturesList();
+    Graphics.init( $(window).innerWidth(), $(window).innerHeight() );
+    World.init();
     Game.registerAllEvents(connection);
     requestAnimFrame(animate);
+
+    //Stats
+    var stats = new Stats();
+    stats.setMode(0); // 0: fps, 1: ms
+    // Align top-left
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+
+    document.body.appendChild( stats.domElement );
+
     function animate() {
+      stats.begin();
       requestAnimFrame(animate);
       Game.update();
       Input.update();
       Graphics.update();
+      stats.end();
     }
   </script>
 </body>

@@ -3,20 +3,26 @@ var Graphics = {};
 
 // initialize graphics for the game (server does not run this function)
 Graphics.init = function (width, height){
+	//get the list of images to be used in the game
+	Graphics.compileRequiredTexturesList();
 	// create an new instance of a pixi stage
-	Graphics.stage = new PIXI.Stage(0x66FF99);
+	Graphics.stage = new PIXI.Stage(0x33FF55, true);
 	// create a renderer instance
 	Graphics.renderer = PIXI.autoDetectRenderer(width, height);
-
-	// add a background image
-	var background = PIXI.Sprite.fromImage("img/orchard.png");
-	Graphics.stage.addChild(background);
-
+	Graphics.renderer.view.style.position = "absolute";
+	Graphics.renderer.view.style.top = "0px";
+	Graphics.renderer.view.style.left = "0px";
 	// add the renderer view element to the DOM
 	document.body.appendChild(Graphics.renderer.view);
-	// create a texture from an image path
-	Unit.texture = PIXI.Texture.fromImage("img/apple_stand.png");
 	Graphics.isInitialized = true;
+
+	$(window).resize(Graphics.resize);
+	window.onorientationchange = Graphics.resize;
+}
+
+Graphics.resize = function(){
+	Graphics.renderer.resize(window.innerWidth, window.innerHeight);
+	World.resize();
 }
 
 // gather the list of textures required from all the game objects in the global space
@@ -57,13 +63,9 @@ Graphics.renderColoredTextures = function(id, func){
 						//get color for id
 						var color = Graphics.colorForID(id);
 						//render the texture
-						console.log("Rendering image from "+sharedAddress+" to "+address+"...");
-						var mat = [[color.r, 0, 0], [color.g, 1, 0], [color.b, 0, 1]];
+						var mat = [[color.r, color.r, color.r], [color.g, color.g, color.g], [color.b, color.b, color.b]];
 						gm(sharedAddress).recolor(mat).write(address, function(err) {
 							if(err) console.log(err);
-							else {
-								console.log("Rendered new image "+address+"!");
-							}
 							//once no more deferred functions need to be executed, run the function
 							if (--deferredCount <= 0) func();
 						});
@@ -123,7 +125,7 @@ Graphics.retrieveColoredTexture = function(name, id){
 }
 
 Graphics.colorForID = function(id){
-	var color = Graphics.hslToRgb(id*120312.234353, .9, .55);
+	var color = Graphics.hslToRgb(id*120312.234353, .9, .4);
 	return color;
 }
 

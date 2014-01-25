@@ -4,6 +4,7 @@ function Player (args){
 	this.selection = new Array();
 	this.units = new Array();
 	this.connection = null;
+	if (Game.isServer) Player.list.add(this);
 	for(var key in args) this[key] = args[key];
 	if (this.connection != null) this.connection.player = this;
 }
@@ -21,7 +22,7 @@ Player.prototype.onEvent = function(e) {
 }
 //send vital information
 Player.prototype.asEvent = function(){
-	return {id:this.id};
+	return {id:this.id, playerID:this.playerID};
 }
 //when player is destroyed, destroy all the units the player owns
 Player.prototype.destroy = function(){
@@ -30,6 +31,7 @@ Player.prototype.destroy = function(){
 		if (Gameobject.list[i].hasOwnProperty("ownerID") && Gameobject.list[i].ownerID == this.id) Gameobject.list[i].destroy();
 	}
 	Gameobject.list[this.id] = null;
+	Player.list[this.id] = null;
 }
 //called when mouse clicks - tells units to go somewhere
 Player.prototype.commandUnits = function(e) {
@@ -49,7 +51,6 @@ Player.prototype.commandUnits = function(e) {
 	if (side-Math.floor(side) <= 0) { //if the hexagon will form perfectly, use this algorithm
 		//fill the hexagon with units until no more units
 		for (var y = 0; y < side*2-1; y++){
-			console.log(y);
 			var rowSize = Math.min(side+y, side*3-2-y);
 			var offset = (rowSize - 1)/2.0;
 			for (var x = -offset; x <= offset; x ++){
@@ -59,8 +60,9 @@ Player.prototype.commandUnits = function(e) {
 					targetID: e.targetID
 				});
 				//get next unit
-				if (selectedID >= this.selection.length) return e;
-				unit = Gameobject.list[this.selection[selectedID++]];
+				unit = null;
+				while (unit == null && selectedID < this.selection.length) unit = Gameobject.list[this.selection[selectedID++]];
+				if (unit == null && selectedID >= this.selection.length) return e;
 			}
 		}
 	}
@@ -95,8 +97,9 @@ Player.prototype.commandUnits = function(e) {
 					//command unit
 					if (unit != null) unit.onEvent({goal:new Point(e.goal).add(pos), targetID:e.targetID});
 					//get next unit
-					if (selectedID > this.selection.length) return e;
-					unit = Gameobject.list[this.selection[selectedID++]];
+					unit = null;
+					while (unit == null && selectedID < this.selection.length) unit = Gameobject.list[this.selection[selectedID++]];
+					if (unit == null && selectedID >= this.selection.length) return e;
 				}
 			}
 		}
@@ -129,7 +132,7 @@ Player.prototype.selectUnits = function(e) {
 }
 
 //list of all players
-Player.list = new IdArray("playerId");
+Player.list = new IdArray("playerID");
 
 //register events 
 Player.registerEvents = function(connection){
@@ -161,7 +164,7 @@ Player.registerEvents = function(connection){
 	//unit commands done per player, not per unit to lower bandwidth
 	connection.socket.on('commandUnits', function(data) {
 		var o = Gameobject.list[data.id];
-		if (!Game.isServer || o != connection.player) {
+		if (!Game.isServer || o == connection.player) {
 			o.commandUnits(data);
 			if (Game.isServer) connection.socket.broadcast.emit('commandUnits', data);
 		}

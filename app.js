@@ -1,7 +1,8 @@
-var app = require('http').createServer(handler)
-  , io = require('socket.io').listen(app)
-  , fs = require('fs')
-  , gm = require('gm');
+global.app = require('http').createServer(handler)
+global.io = require('socket.io').listen(app, { log: false })
+global.fs = require('fs')
+global.gm = require('gm');
+
   /*, dogecoin = require('node-dogecoin')({ // doge coin experimentation
       user: "nathan",
       pass: "gorbyporby"
@@ -36,7 +37,6 @@ var blacklist = {"/app.js":true}; // any file put in here can not be requested f
 
 
 function handler (req, res) {
-  console.log(req.url);
   var fileName;
   if (blacklist.hasOwnProperty(req.url)) return res.end('Error loading '+req.url); // if this file is blacklisted, hide it from the client
   if ( req.url == '/') {
@@ -64,6 +64,6 @@ io.sockets.on('connection', function (socket) {
   var connection = new Connection({player:player, socket:socket, io:io});
   Graphics.renderColoredTextures(player.playerID, function(){
     Game.registerAllEvents(connection);
-  }
+  });
 });
 

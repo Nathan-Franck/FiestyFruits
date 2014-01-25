@@ -4,7 +4,6 @@ Game.isServer = false;
 
 Game.registerAllEvents = function(connection){
 	for (var key in global){
-		console.log(key);
 		if (global[key].hasOwnProperty("registerEvents"))
 			global[key].registerEvents(connection);
 	}

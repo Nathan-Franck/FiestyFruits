@@ -56,7 +56,8 @@ Gameobject.registerEvents = function(connection){
 	}
 	else {
 		connection.socket.on('destroy', function(data) {
-    		Gameobject.list[data].destroy();
+    		var g = Gameobject.list[data.id];
+    		if (g != null) g.destroy();
     	})
 	}
 	connection.socket.on('update', function(data) {
